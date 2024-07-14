@@ -1,0 +1,24 @@
+{% extends "login.html" %}
+
+{% block title %}
+    Sign Up
+{% endblock %}
+
+{% block main %}
+    <div class="container" style="text-align: center; width: 15%; padding: 20px; border: none;">
+        <form action="/signup" method="post">
+            <h4>Sign Up</h4>
+            <div class="mb-3">
+                <input type="text" autocomplete="off" autofocus name="username" placeholder="Username*" required>
+            </div>
+            <div class="mb-3">
+                <input type="text" autocomplete="off" autofocus name="password" placeholder="Password*" required>
+            </div>
+            <div class="mb-3">
+                <input type="text" autocomplete="off" autofocus name="confirm" placeholder="Comfirm password*">
+            </div>
+            <p style="color: white">Have an account? <a href="login.html">Login</a></p>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+{% endblock %}
