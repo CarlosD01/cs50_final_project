@@ -8,7 +8,7 @@
     <div class="container" style="text-align: left; width: 33%">
         <h4>This is the title of the post.</h4>
         <p class="font">This is the main body of the post, where all the user's content will be!</p>
-        <img src="../static/spidey_lift.jpg" alt="Spider-Man holding up fallen building.">
+        <img src="{{ url_for('static', filename='spidey_lift.jpg') }}" alt="Spider-Man holding up fallen building.">
         <h6 class="font" style="margin-top: 9px;">Like | Comment | Save</h6>
     </div>
     <hr style="width: 35%; margin: 20px auto 20px auto; color: rgba(255, 255, 255, 0.3)">

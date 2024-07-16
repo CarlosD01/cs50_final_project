@@ -14,19 +14,15 @@ db = SQLAlchemy(app)
 
 communities = ["Movies", "Games", "Sports", "Politics", "Reading"]
 
-@app.route("/")
-def home():
-    return render_template("index.html")
-
-@app.route("/index.html")
+@app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
-@app.route("/post.html")
+@app.route("/post")
 def post():
     return render_template("post.html")
 
-@app.route("/login.html", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
@@ -36,7 +32,7 @@ def login():
     else:
         return render_template("login.html")
 
-@app.route("/signup.html", methods=["GET", "POST"])
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
         username = request.form.get("username")
