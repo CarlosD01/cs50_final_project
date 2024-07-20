@@ -5,20 +5,30 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container" style="text-align: center; width: 15%; padding: 20px; border: none;">
-        <form action="/signup" method="post">
-            <h4>Sign Up</h4>
-            <div class="mb-3">
-                <input type="text" autocomplete="off" autofocus name="username" placeholder="Username*" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" autocomplete="off" autofocus name="password" placeholder="Password*" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" autocomplete="off" autofocus name="confirm" placeholder="Comfirm password*">
-            </div>
-            <p style="color: white">Have an account? <a href="/login">Login</a></p>
-            <button type="submit">Sign Up</button>
-        </form>
-    </div>
+    {% if username %}
+        {% if password == confirm %}
+            <h4 style="text-align: center;">Username: {{ username }} <br> Password: {{ password }} <br> Confirmation: {{ confirm }}</h4>
+        {% else %}
+        <h4 style="text-align: center;">Passwords do not match! <br> Try again.</h4>
+        {% endif %}
+    {% else %}
+        <div class="container" style="text-align: center; width: 15%; padding: 20px; border: none;">
+            <form action="/signup" method="POST">
+                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
+                <h4>Sign Up</h4>
+                <div class="mb-3">
+                    {{ form.username(placeholder="Username") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.password(placeholder="Password") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.confirm(placeholder="Confirm Password") }}
+                </div>
+                <p style="color: white">Have an account? <a href="/login">Login</a></p>
+                {{ form.submit(class="button") }}
+            </form>
+        </div>
+    {% endif %}
 {% endblock %}

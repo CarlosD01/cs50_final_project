@@ -5,17 +5,23 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container" style="text-align: center; width: 15%; padding: 20px; border: none;">
-        <form action="/login.html" method="post">
-            <h4>Log In</h4>
-            <div class="mb-3">
-                <input type="text" autocomplete="off" autofocus name="username" placeholder="Username*" required>
-            </div>
-            <div class="mb-3">
-                <input type="text" autocomplete="off" autofocus name="password" placeholder="Password*" required>
-            </div>
-            <p style="color: white">New to 4RUMS? <a href="/signup">Sign Up</a></p>
-            <button type="submit">Log In</button>
-        </form>
-    </div>
+    {% if username %}
+            <h4 style="text-align: center;">Username: {{ username }} <br> Password: {{ password }}</h4> 
+    {% else %}
+        <div class="container" style="text-align: center; width: 15%; padding: 20px; border: none;">
+            <form action="/login" method="POST">
+                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
+                <h4>Log In</h4>
+                <div class="mb-3">
+                    {{ form.username(placeholder="Username") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.password(placeholder="Password") }}
+                </div>
+                <p style="color: white">New to 4RUMS? <a href="/signup">Sign Up</a></p>
+                {{ form.submit(class="button") }}
+            </form>
+        </div>
+    {% endif %}
 {% endblock %}

@@ -107,4 +107,37 @@ input:hover {
 p a {
     color: rgb(0, 149, 235);
     text-decoration: none;
+    transition: all 0.3s ease 0s;
+}
+
+p a:hover {
+    color: rgba(0, 149, 235, 0.8);
+}
+
+.button {
+    padding: 9px 20px;
+    background-color: rgb(0, 149, 235);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+
+.button:hover {
+    background-color: rgba(0, 149, 235, 0.8);
+}
+
+.body {
+    background-color: rgba(65, 71, 88, 0.6);
+    border: 2px transparent;
+    border-radius: 10px;
+    padding: 9px 0px 75px 9px;
+    font-family: Istok Web, sans-serif;
+    color: rgb(255, 255, 255);
+    transition: all 0.3s ease 0s;
+}
+
+.body:hover {
+    cursor: pointer;
+    background-color: rgba(65, 71, 88, 1);
 }

@@ -5,17 +5,23 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/post" method="post">
-        <div class="container" style="text-align: left; width: 33%">
-            <h4 style="padding: 0px 11px 11px 0px">Create post</h4>
-            <select class="form-select mx-auto w-auto" style="margin-bottom: 25px" name="community" required>
-                <option disabled selected>Select a community</option>
-                {% for community in communities %}
-                    <option value="{{ community }}">{{ community }}</option>
-                {% endfor %}
-            <input type="text" autocomplete="off" autofocus name="title" placeholder="Title*" required>
-            <br>
-            <input style="height: 10%" type="text" autocomplete="off" autofocus name="body" placeholder="Body">
-        </div>
-    </form>
+    {% if form.save.data %}
+        <h4 style="text-align: center;">Post "{{ title }}" has been saved.</h4> 
+    {% else %}
+        <form action="/post" method="POST">
+            <div class="container" style="text-align: left; width: 33%">
+                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
+                <h4 style="padding: 0px 11px 11px 0px">Create post</h4>
+                {{ form.title(placeholder="Title*") }}
+                <br>
+                {{ form.body(placeholder="Body*", class="body") }}
+                <div style="text-align: right; margin-top: 9px;">
+                    {{ form.save(class="button") }}
+                    <span style="width: 5px;display: inline-block"></span>
+                    {{ form.post(class="button") }}
+                </div>
+            </div>
+        </form>
+    {% endif %}
 {% endblock %}
