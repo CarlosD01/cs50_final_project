@@ -5,23 +5,21 @@
 {% endblock %}
 
 {% block main %}
-    {% if form.save.data %}
-        <h4 style="text-align: center;">Post "{{ title }}" has been saved.</h4> 
-    {% else %}
-        <form action="/post" method="POST">
-            <div class="container" style="text-align: left; width: 33%">
-                {{ form.hidden_tag() }}
-                {{ form.csrf_token }}
-                <h4 style="padding: 0px 11px 11px 0px">Create post</h4>
-                {{ form.title(placeholder="Title*") }}
-                <br>
-                {{ form.body(placeholder="Body*", class="body") }}
-                <div style="text-align: right; margin-top: 9px;">
-                    {{ form.save(class="button") }}
-                    <span style="width: 5px;display: inline-block"></span>
-                    {{ form.post(class="button") }}
-                </div>
+    <form action="/post" method="POST">
+        <div class="container" style="text-align: left; width: 33%;">
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+            <h4 style="padding: 0px 11px 11px 0px">Create post</h4>
+            {{ form.community(placeholder="Select a Community", class="select_comm") }}
+            </select>
+            <br>
+            {{ form.title(placeholder="Title*") }}
+            <br>
+            {{ form.body(placeholder="Body*", class="body") }}
+            <div style="text-align: right; margin-top: 9px;">
+                <span style="width: 5px;display: inline-block"></span>
+                {{ form.post(class="button") }}
             </div>
-        </form>
-    {% endif %}
+        </div>
+    </form>
 {% endblock %}

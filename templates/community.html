@@ -1,18 +1,16 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Index
+    {{ community }}
 {% endblock %}
 
 {% block main %}
     {% for post in post_history %}
+        <!--Need to find which community link was selected and filter by that tag. Display all posts with specified tag.-->
         <div class="container" style="text-align: left; width: 33%">
-            <p>f/{{ post.community }} | {{ post.date_created }}<br>
-                <img style="width: 28px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture"> {{ post.username }}
-            </p>
+            <p>f/{{ post.community }} | {{ post.date_created }}</p>
             <h4>{{ post.title }}</h4>
             <p class="font">{{ post.body }}</p>
-            <!--<img src="{{ url_for('static', filename='spidey.jpg') }}" alt="Spider-Man holding up fallen building.">-->
             <h4 class="font" style="margin-top: 9px;">
                 <span style="margin-right: 9px;" class="material-symbols-outlined">thumb_up thumb_down<!--votes--></span>
                 <span class="material-symbols-outlined">comment<!--comments--></span>

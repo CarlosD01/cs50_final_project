@@ -141,3 +141,58 @@ p a:hover {
     cursor: pointer;
     background-color: rgba(65, 71, 88, 1);
 }
+
+.communities {
+    position: absolute;
+    left: 0;
+    border-right: 2px solid rgba(255, 255, 255, 0.1);
+    padding: 18px;
+    margin-left: 20px;
+    transition: all 0.3s ease 0s;
+}
+
+.communities p a {
+    color: rgb(255, 255, 255);
+}
+
+.communities p a:hover {
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+}
+
+.nav li a {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.nav li a:hover {
+    color: rgb(0, 149, 235);
+    cursor: pointer;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+.select_comm {
+    background: rgba(65, 71, 88, 0.6);
+    font-family: Istok Web, sans-serif;
+    color: rgba(255, 255, 255, 0.9);
+    border: 2px;
+    border-radius: 10px;
+    padding: 7px;
+    cursor: pointer;
+    width: 24%;
+    transition: all 0.3s ease 0s;
+}
+
+.select_comm:hover {
+    background-color: rgba(65, 71, 88, 1);
+}
+
+select option {
+    background: rgba(65, 71, 88, 0.8);
+}

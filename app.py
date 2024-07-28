@@ -1,15 +1,75 @@
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, TextAreaField, SelectField
-from wtforms.validators import DataRequired, EqualTo, InputRequired
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField, ValidationError, SelectField
+from wtforms.validators import DataRequired, EqualTo, InputRequired, Length
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import jinja2
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 
-# Configure application
+# Create Flask Instance
 app = Flask(__name__)
 
+# Add Database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
+app.config["SECRET_KEY"] = "12345"
+
+# Initializa Database
+db = SQLAlchemy(app)
+
+# Flask_Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+# Loads user when logged in
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
+# Temporary Communities List
+communities = ["Art", "Books", "Film", "Gaming", "Lifestyle", "Movies", "Politics"]
 
 # Create Form Class
+class Users(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+
+    password_hash = db.Column(db.String(50), nullable=False)
+
+    @property
+    def password(self):
+        raise AttributeError('password not readable attribute')
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class Posts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(300), nullable=False)
+    body = db.Column(db.String(1000), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    community = db.Column(db.String(100), nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    comments = db.relationship('Comments', backref='posts', lazy=True)
+
+class Comments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(500), nullable=False)
+    votes = db.Column(db.Integer, nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+with app.app_context():
+    db.create_all()
+
 class Login(FlaskForm):
     username = StringField(validators=[DataRequired()])
     password = PasswordField(validators=[DataRequired()])
@@ -17,91 +77,110 @@ class Login(FlaskForm):
 
 class Signup(FlaskForm):
     username = StringField(validators=[DataRequired()])
-    password = PasswordField(validators=[DataRequired()])
+    password_hash = PasswordField(validators=[DataRequired(), EqualTo('confirm', message='Passwords must match!')])
     confirm = PasswordField(validators=[DataRequired()])
     submit = SubmitField("Sign Up")
 
 class Post(FlaskForm):
     title = StringField(validators=[InputRequired()])
     body = TextAreaField(validators=[InputRequired()])
-    save = SubmitField("Save Draft")
+    community = SelectField(validators=[DataRequired()], choices=[("Select a Community"), ("Art"), ("Books"), ("Film"), ("Gaming"), ("Lifestyle"), ("Movies"), ("Politics")])
     post = SubmitField("Post")
 
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    post_history = Posts.query.order_by(Posts.date_created.desc())
+    return render_template("index.html", communities=communities, post_history=post_history)
 
 @app.route("/post", methods=["GET", "POST"])
+@login_required
 def post():
-    title = None
-    body = None
     form = Post()
 
-    if request.method == "POST":
-        if form.validate_on_submit():
+    if form.validate_on_submit():
+        post = Posts(title=form.title.data, body=form.body.data, community=form.community.data, username=current_user.username)
 
-            title = form.title.data
-            body = form.body.data
-            form.title.data = ""
-            form.body.data = ""
+        db.session.add(post)
+        db.session.commit()
 
-            if form.post.data:
-                return render_template("index.html", title=title, body=body, form=form)
-            
-            elif form.save.data:
-                return render_template("post.html", title=title, body=body, form=form)
+        form.title.data = ""
+        form.body.data = ""
 
-    
-    else:
-        return render_template("post.html", title=title, body=body, form=form)
+        flash("Post created!")
+
+    return render_template("post.html", communities=communities, form=form)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    username = None
-    password = None
     form = Login()
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            username = form.username.data
-            password = form.password.data
-            form.username.data = ""
-            form.password.data = ""
+    if form.validate_on_submit():
+        user = Users.query.filter_by(username=form.username.data).first()
 
-        return render_template("login.html", username=username, password=password, form=form)
-    
-    else:
-        return render_template("login.html", username=username, password=password, form=form)
+        if user is None:
+            flash("User does not exist.")
+            return redirect("/login")
+        
+        else:
+            
+            if check_password_hash(user.password_hash, form.password.data):
+                login_user(user)
+                flash("Login successful!")
+            
+            else:
+                flash("Incorrect password.")
+                
+                
+            return redirect("/login")
 
+    return render_template("login.html", communities=communities, form=form)
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     username = None
-    password = None
-    confirm = None
     form = Signup()
 
-    if request.method == "POST":
-        if form.validate_on_submit():
-            username = form.username.data
-            password = form.password.data
-            confirm = form.confirm.data
-            form.username.data = ""
-            form.password.data = ""
-            form.confirm.data = ""
 
-            return render_template("signup.html", username=username, password=password, confirm=confirm, form=form)
-    
-    else:
-        return render_template("signup.html", username=username, password=password, confirm=confirm, form=form)
+    if form.validate_on_submit():
+        user = Users.query.filter_by(username=form.username.data).first()
+
+        if user is None:
+            # Hash password
+            hashed_pw = generate_password_hash(form.password_hash.data)
+
+            user = Users(username=form.username.data, password_hash=hashed_pw)
+
+            username = form.username.data
+
+            db.session.add(user)
+            db.session.commit()
+
+            form.username.data = ""
+            form.password_hash.data = ""
+
+            flash("User added successfully!")
+        
+        else:
+            flash("User already exists!")
+            return redirect("/signup")
+        
+    user = Users.query.order_by(Users.date_created)
+    return render_template("signup.html", communities=communities, form=form)
+
+@app.route("/logout", methods=["GET", "POST"])
+@login_required
+def logout():
+    logout_user()
+    flash("Logout successful.")
+    return redirect("/")
     
 # Invalid URL
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html"), 404
+    return render_template("404.html", communities=communities), 404
 
 # Internal Server Error
 @app.errorhandler(500)
 def server_error(e):
-    return render_template("500.html"), 500
+    return render_template("500.html", communities=communities), 500
