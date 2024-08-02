@@ -64,6 +64,7 @@ button:hover {
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 11px;
+    overflow: hidden;
 }
 
 h4 {
@@ -178,11 +179,8 @@ p a:hover {
 }
 
 .select_comm {
-    background: rgba(65, 71, 88, 0.6);
     font-family: Istok Web, sans-serif;
     color: rgba(255, 255, 255, 0.9);
-    border: 2px;
-    border-radius: 10px;
     padding: 7px;
     cursor: pointer;
     width: 24%;
@@ -195,4 +193,27 @@ p a:hover {
 
 select option {
     background: rgba(65, 71, 88, 0.8);
+}
+
+.back {
+    margin-right: 5px; 
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease 0s;
+}
+
+.back:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+h4 a {
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease 0s;
+}
+
+h4 a:hover {
+    color: rgb(0, 149, 235);
+    cursor: pointer;
 }

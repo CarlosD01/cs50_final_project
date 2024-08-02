@@ -18,8 +18,9 @@
             <p class="logo"><a href="/" style="font-size: 26px; font-weight: 600; color: rgb(255, 255, 255)"><span style="color: rgb(0, 149, 235)">4</span>UMS</p></a></p>
             <nav>
                 <ul class="nav_links">
-                    <li><a href="/post">+ Post</a></li>
                     {% if current_user.is_authenticated %}
+                        <li><a href="/dashboard">Profile</a></li>
+                        <li><a href="/post">+ Post</a></li>
                         <li><a href="/logout"><button>Log Out</button></a></li>
                     {% else %}
                         <li><a href="/login"><button>Log In</button></a></li>
@@ -34,9 +35,10 @@
                 <hr style="width: 99%; margin: 0px auto 9px auto; color: rgba(255, 255, 255, 0.7);">
                 <div class="collapse show" id="collapseExample">
                     <ul class="nav flex-column" style="text-align: left;">
-                        <li><a class="nav-link" href="/"><span>+ Community</span></a></li>
+                        <li><a class="nav-link" href="/">+ Community</a></li>
                         {% for community in communities %}
-                            <li><a class="nav-link" href="/"><span>{{ community }}</span></a></li>
+                            <!--Need to send the name of community that was clicked to the community function so that way it can sort by community-->
+                            <li><a class="nav-link" href="{{ url_for('community') }}"><img style="width: 25px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default Community image"> {{ community }}</a></li>
                         {% endfor %}
                     </ul>
                     <hr style="width: 99%; margin: 9px auto 9px auto; color: rgba(255, 255, 255, 0.7);">
@@ -46,9 +48,10 @@
             {% with messages = get_flashed_messages() %}
             {% if messages %} 
             {% for message in messages %}
-            <div style="text-align: center; width: 80%; margin: auto" class="alert alert-primary" role="alert">
+            <div style="text-align: center; width: 80%; margin: auto" class="alert alert-primary alert-dismissible fade show" role="alert">
                 {{ message }}
-            </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
             {% endfor %}
             {% endif %} 
             {% endwith %}

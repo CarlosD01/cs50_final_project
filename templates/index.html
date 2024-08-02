@@ -6,18 +6,22 @@
 
 {% block main %}
     {% for post in post_history %}
-        <div class="container" style="text-align: left; width: 33%">
-            <p>f/{{ post.community }} | {{ post.date_created }}<br>
-                <img style="width: 28px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture"> {{ post.username }}
-            </p>
-            <h4>{{ post.title }}</h4>
-            <p class="font">{{ post.body }}</p>
-            <!--<img src="{{ url_for('static', filename='spidey.jpg') }}" alt="Spider-Man holding up fallen building.">-->
-            <h4 class="font" style="margin-top: 9px;">
-                <span style="margin-right: 9px;" class="material-symbols-outlined">thumb_up thumb_down<!--votes--></span>
-                <span class="material-symbols-outlined">comment<!--comments--></span>
-            </h4>
-        </div>
+        <a href="{{ url_for('post_page', id=post.id)}}">
+            <div class="container" style="text-align: left; width: 33%">
+                <p style="display: inline-block; margin-bottom: 7px;">
+                    <img style="width: 28px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
+                    f/{{ post.community }} • {{ post.date_created }}
+                    <br>
+                </p>
+                <h4 style="margin-bottom: 12px;">{{ post.title }}</h4>
+                <p class="font">{{ post.body }}</p>
+                <br>
+                <h4 class="font" style="margin-top: 9px;">
+                    <span style="margin-right: 9px;" class="material-symbols-outlined">thumb_up thumb_down<!--votes--></span>
+                    <span class="material-symbols-outlined">comment<!--comments--></span>
+                </h4>
+            </div>
+        </a>
         <hr style="width: 35%; margin: 20px auto 20px auto; color: rgba(255, 255, 255, 0.3)">
     {% endfor %}
 {% endblock %}

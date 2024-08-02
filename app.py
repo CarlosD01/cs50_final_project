@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, session, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField, ValidationError, SelectField
-from wtforms.validators import DataRequired, EqualTo, InputRequired, Length
+from wtforms.validators import DataRequired, EqualTo, InputRequired
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import jinja2
@@ -38,6 +38,7 @@ class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    posts = db.relationship('Posts', backref='users', lazy=True)
 
     password_hash = db.Column(db.String(50), nullable=False)
 
@@ -58,13 +59,16 @@ class Posts(db.Model):
     body = db.Column(db.String(1000), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     community = db.Column(db.String(100), nullable=False)
+    votes = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     username = db.Column(db.String(50), nullable=False)
     comments = db.relationship('Comments', backref='posts', lazy=True)
 
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(500), nullable=False)
-    votes = db.Column(db.Integer, nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
 with app.app_context():
@@ -87,11 +91,23 @@ class Post(FlaskForm):
     community = SelectField(validators=[DataRequired()], choices=[("Select a Community"), ("Art"), ("Books"), ("Film"), ("Gaming"), ("Lifestyle"), ("Movies"), ("Politics")])
     post = SubmitField("Post")
 
+class Comment(FlaskForm):
+    comment = StringField(validators=[InputRequired()])
+    submit = SubmitField("Comment")
+
 
 @app.route("/", methods=["GET"])
 def index():
     post_history = Posts.query.order_by(Posts.date_created.desc())
+
     return render_template("index.html", communities=communities, post_history=post_history)
+
+@app.route("/community/", methods=["GET"])
+def community():
+    
+    post_community = Posts.query.filter_by(community=Posts.community).order_by(Posts.date_created.desc())
+
+    return render_template("community.html", communities=communities, post_community=post_community)
 
 @app.route("/post", methods=["GET", "POST"])
 @login_required
@@ -99,7 +115,7 @@ def post():
     form = Post()
 
     if form.validate_on_submit():
-        post = Posts(title=form.title.data, body=form.body.data, community=form.community.data, username=current_user.username)
+        post = Posts(title=form.title.data, body=form.body.data, community=form.community.data, user_id=current_user.id, username=current_user.username)
 
         db.session.add(post)
         db.session.commit()
@@ -110,6 +126,23 @@ def post():
         flash("Post created!")
 
     return render_template("post.html", communities=communities, form=form)
+
+@app.route("/posts/<int:id>", methods=["GET", "POST"])
+def post_page(id):
+    form = Comment()
+
+    post = Posts.query.get_or_404(id)
+
+    if form.validate_on_submit():
+        comment = Comments(body=form.comment.data, username=current_user.username, post_id=post.id)
+
+        db.session.add(comment)
+        db.session.commit()
+
+        form.comment.data = ""
+
+    comments = Comments.query.filter_by(post_id=post.id).order_by(Comments.date_created.desc())
+    return render_template("post_page.html", communities=communities, post=post, comments=comments, form=form)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -132,7 +165,7 @@ def login():
                 flash("Incorrect password.")
                 
                 
-            return redirect("/login")
+            return redirect("/dashboard")
 
     return render_template("login.html", communities=communities, form=form)
 
@@ -160,6 +193,7 @@ def signup():
             form.password_hash.data = ""
 
             flash("User added successfully!")
+            return redirect("/login")
         
         else:
             flash("User already exists!")
@@ -167,6 +201,11 @@ def signup():
         
     user = Users.query.order_by(Users.date_created)
     return render_template("signup.html", communities=communities, form=form)
+
+@app.route("/dashboard", methods=["GET", "POST"])
+@login_required
+def dashboard():
+    return render_template("dashboard.html", communities=communities)
 
 @app.route("/logout", methods=["GET", "POST"])
 @login_required

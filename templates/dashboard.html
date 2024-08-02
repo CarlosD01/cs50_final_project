@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block main %}
+        <div class="container" style="text-align: left; width: 40%">
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <img style="width: 150px; margin-right: 12px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
+                <h4>user/{{ current_user.username }}</h4>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 7px;">
+                <h4 style="margin-right: 15px; margin-left: 12px;">Overview</h4>
+                <h4 style="margin-right: 15px; margin-left: 12px;">Posts</h4>
+                <h4 style="margin-right: 15px; margin-left: 12px;">Commments</h4>
+            </div>
+        </div>
+    </a>
+{% endblock %}
