@@ -74,6 +74,14 @@ h4 {
     text-decoration: none;
 }
 
+h4:hover {
+    font-family: Istok Web, sans-serif;
+    font-weight: 550;
+    color: rgb(0, 149, 235);
+    text-decoration: none;
+    transition: all 0.3s ease 0s;
+}
+
 p, h6 {
     font-family: Istok Web, sans-serif;
     color: rgba(255, 255, 255, 0.8);
@@ -208,12 +216,11 @@ select option {
     color: rgba(255, 255, 255, 1);
 }
 
-h4 a {
-    color: rgba(255, 255, 255, 0.8);
+a img {
     transition: all 0.3s ease 0s;
 }
 
-h4 a:hover {
-    color: rgb(0, 149, 235);
+a img:hover {
+    filter: opacity(0.5);
     cursor: pointer;
 }

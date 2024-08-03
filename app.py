@@ -1,7 +1,7 @@
-from flask import Flask, redirect, render_template, request, session, flash
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField, ValidationError, SelectField
-from wtforms.validators import DataRequired, EqualTo, InputRequired
+from flask import Flask, redirect, render_template, request, session, flash, url_for
+from flask_wtf import FlaskForm # type: ignore
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField, ValidationError, SelectField # type: ignore
+from wtforms.validators import DataRequired, EqualTo, InputRequired # type: ignore
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import jinja2
@@ -31,7 +31,7 @@ def load_user(user_id):
 
 
 # Temporary Communities List
-communities = ["Art", "Books", "Film", "Gaming", "Lifestyle", "Movies", "Politics"]
+communities = ["Art", "Books", "Film", "Gaming", "Lifestyle", "Politics"]
 
 # Create Form Class
 class Users(db.Model, UserMixin):
@@ -88,7 +88,7 @@ class Signup(FlaskForm):
 class Post(FlaskForm):
     title = StringField(validators=[InputRequired()])
     body = TextAreaField(validators=[InputRequired()])
-    community = SelectField(validators=[DataRequired()], choices=[("Select a Community"), ("Art"), ("Books"), ("Film"), ("Gaming"), ("Lifestyle"), ("Movies"), ("Politics")])
+    community = SelectField(validators=[DataRequired()], choices=[("Select a Community"), ("Art"), ("Books"), ("Film"), ("Gaming"), ("Lifestyle"), ("Politics")])
     post = SubmitField("Post")
 
 class Comment(FlaskForm):
@@ -117,9 +117,11 @@ def post():
     if form.validate_on_submit():
         post = Posts(title=form.title.data, body=form.body.data, community=form.community.data, user_id=current_user.id, username=current_user.username)
 
+        # Commit post to post db
         db.session.add(post)
         db.session.commit()
 
+        # Clear form data
         form.title.data = ""
         form.body.data = ""
 
@@ -127,7 +129,32 @@ def post():
 
     return render_template("post.html", communities=communities, form=form)
 
-@app.route("/posts/<int:id>", methods=["GET", "POST"])
+app.route("/post/edit/<int:id>", methods=["GET", "POST"])
+@login_required
+def post_edit(id):
+    form = Post()
+    post = Posts.query.get_or_404(id)
+    
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.body = form.body.data
+        post.community = form.community.data
+
+        # Update the post db
+        db.session.add(post)
+        db.session.commit
+
+        flash("Changes made successfully.")
+
+        return redirect(url_for('post', id=post.id), communities=communities)
+    
+    form.title.data = post.title
+    form.body.data = post.body
+    form.community.data = post.community
+    
+    return render_template("post_edit.html", communities=communities, form=form)
+
+@app.route("/post/<int:id>", methods=["GET", "POST"])
 def post_page(id):
     form = Comment()
 
@@ -136,11 +163,14 @@ def post_page(id):
     if form.validate_on_submit():
         comment = Comments(body=form.comment.data, username=current_user.username, post_id=post.id)
 
+        # Commit comment to comment db
         db.session.add(comment)
         db.session.commit()
 
+        # Clear form data
         form.comment.data = ""
 
+    # Display comments for specified post in order of newest 
     comments = Comments.query.filter_by(post_id=post.id).order_by(Comments.date_created.desc())
     return render_template("post_page.html", communities=communities, post=post, comments=comments, form=form)
 
@@ -156,14 +186,12 @@ def login():
             return redirect("/login")
         
         else:
-            
             if check_password_hash(user.password_hash, form.password.data):
                 login_user(user)
                 flash("Login successful!")
             
             else:
                 flash("Incorrect password.")
-                
                 
             return redirect("/dashboard")
 
@@ -184,11 +212,11 @@ def signup():
 
             user = Users(username=form.username.data, password_hash=hashed_pw)
 
-            username = form.username.data
-
+            # Commit user to user db
             db.session.add(user)
             db.session.commit()
 
+            # Clear form data
             form.username.data = ""
             form.password_hash.data = ""
 
