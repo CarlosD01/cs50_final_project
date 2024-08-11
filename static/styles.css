@@ -67,7 +67,7 @@ button:hover {
     overflow: hidden;
 }
 
-h4 {
+h2, h4 {
     font-family: Istok Web, sans-serif;
     font-weight: 550;
     color: rgb(255, 255, 255);
@@ -84,7 +84,7 @@ h4:hover {
 
 p, h6 {
     font-family: Istok Web, sans-serif;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
 }
 
@@ -136,6 +136,34 @@ p a:hover {
     background-color: rgba(0, 149, 235, 0.8);
 }
 
+.button_delete {
+    padding: 9px 20px;
+    background-color: rgb(228, 55, 64);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+
+.button_delete:hover {
+    background-color: rgba(228, 55, 64, 0.8);
+}
+
+.button_cancel {
+    padding: 9px 20px;
+    background-color: rgb(148, 148, 148);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+    color: rgb(255, 255, 255);
+}
+
+.button_cancel:hover {
+    opacity: 0.8;
+    color: rgb(255, 255, 255);
+}
+
 .body {
     background-color: rgba(65, 71, 88, 0.6);
     border: 2px transparent;
@@ -178,14 +206,6 @@ p a:hover {
     cursor: pointer;
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
-}
-
 .select_comm {
     font-family: Istok Web, sans-serif;
     color: rgba(255, 255, 255, 0.9);
@@ -204,16 +224,14 @@ select option {
 }
 
 .back {
-    margin-right: 5px; 
-    border-radius: 50px;
     cursor: pointer;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgb(255, 255, 255);
     transition: all 0.3s ease 0s;
 }
 
 .back:hover {
-    color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, .7);
 }
 
 a img {
@@ -224,3 +242,28 @@ a img:hover {
     filter: opacity(0.5);
     cursor: pointer;
 }
+
+.like_dislike {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+
+.like_dislike:hover {
+    color: rgb(0, 149, 235);
+    background-color: transparent;
+}
+
+.material-symbols-outlined.liked {
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+.material-symbols-outlined.md-18 {
+    font-size: 18px;
+  }

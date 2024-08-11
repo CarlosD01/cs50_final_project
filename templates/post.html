@@ -9,16 +9,19 @@
         <div class="container" style="text-align: left; width: 33%;">
             {{ form.hidden_tag() }}
             {{ form.csrf_token }}
-            <h4 style="padding: 0px 11px 11px 0px">Create post</h4>
-            {{ form.community(placeholder="Select a Community", class="select_comm") }}
+            <h4 style="padding: 0px 11px 11px 0px; pointer-events: none;">Create post</h4>
+            {{ form.community(class="select_comm") }}
             <br>
             {{ form.title(placeholder="Title*") }}
             <br>
-            {{ form.body(placeholder="Body*", class="body") }}
-            <div style="text-align: right; margin-top: 9px;">
-                <span style="width: 5px;display: inline-block"></span>
+            {{ form.body|safe }}
+            <div style="text-align: right; margin-top: 15px;">
+                <a href="/" class="button_cancel">Cancel</a>
+                <span style="margin-right: 9px;"></span>
                 {{ form.post(class="button") }}
             </div>
         </div>
     </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='body') }}
 {% endblock %}

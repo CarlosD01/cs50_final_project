@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Edit Post
+    Community Add
 {% endblock %}
 
 {% block main %}
@@ -9,18 +9,14 @@
         <div class="container" style="text-align: left; width: 33%;">
             {{ form.hidden_tag() }}
             {{ form.csrf_token }}
-            <h4 style="padding: 0px 11px 11px 0px; pointer-events: none;">Edit post</h4>
-            {{ form.community(placeholder="Select a Community", class="select_comm") }}
+            <h4 style="padding: 0px 11px 11px 0px; pointer-events: none;">Create a community</h4>
+            {{ form.name(placeholder="Community name") }}
             <br>
-            {{ form.title(placeholder="Title*") }}
-            <br>
-            {{ form.body|safe }}
+            {{ form.description(placeholder="Desription...", class="body") }}
             <div style="text-align: right; margin-top: 15px;">
                 <a href="/" class="button_cancel">Cancel</a>
                 <span style="margin-right: 9px;"></span>
-                {{ form.delete(class="button_delete") }}
-                <span style="margin-right: 9px;"></span>
-                {{ form.post(class="button") }}
+                {{ form.create(class="button") }}
             </div>
         </div>
     </form>

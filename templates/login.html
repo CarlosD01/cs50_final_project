@@ -9,7 +9,7 @@
         <form action="/login" method="POST">
             {{ form.hidden_tag() }}
             {{ form.csrf_token }}
-            <h4>Log In</h4>
+            <h4 style="pointer-events: none;">Log In</h4>
             <div class="mb-3">
                 {{ form.username(placeholder="Username") }}
             </div>

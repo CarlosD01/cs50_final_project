@@ -7,17 +7,24 @@
 {% block main %}
     {% for post in post_history %}
             <div class="container" style="text-align: left; width: 33%;">
-                <p style="display: inline-block; margin-bottom: 7px;">
-                    <img style="width: 28px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
-                    f/{{ post.community }} • {{ post.date_created }}
-                    <br>
+                <p style="display: flex; align-items: center;">
+                    {% if post.users.profile_pic %}
+                    <a href="{{ url_for('view', id=post.users.id) }}"><img style="width: 42px; height: 42px; margin-right: 7px; border-radius: 50%;" src="{{ url_for('static', filename='images/' + post.users.profile_pic) }}" alt="Profile picture"></a>
+                    {% else %}
+                    <a href="{{ url_for('view', id=post.users.id) }}"><img style="width: 42px; margin-right: 7px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture"></a>
+                    {% endif %}
+                    f/{{ post.community }} • {{ post.date_created }}<br>{{ post.users.username }}
                 </p>
-                <a href="{{ url_for('post_page', id=post.id)}}"><h4 style="margin-bottom: 12px;">{{ post.title }}</h4></a>
-                <p class="font">{{ post.body }}</p>
+                <a href="{{ url_for('post_page', id=post.id)}}"><h4 style="margin-bottom: 7px;">{{ post.title }}</h4></a>
+                <p class="font">{{ post.body|safe }}</p>
                 <div style="display: flex; align-items: center;">
-                    <h4 class="font" style="margin-top: 9px; cursor: pointer"><span style="margin-right: 9px;" class="material-symbols-outlined">thumb_up</span></h4>
-                    <h4 class="font" style="margin-top: 9px; cursor: pointer"><span style="margin-right: 9px;" class="material-symbols-outlined">thumb_down</span></h4>
-                    <a href="{{ url_for('post_page', id=post.id) }}"><h4 class="font" style="margin-top: 9px; cursor: pointer"><span class="material-symbols-outlined">comment</span></h4></a>
+                    <p style="margin-right: 7px; margin-top: 1px">{{ post.post_like|length }}</p>
+                    {% if current_user.id in post.post_like|map(attribute="user_id")|list %}
+                    <h4 class="font"><span style="margin-right: 9px; pointer-events: none; color: rgb(0, 149, 235);" class="material-symbols-outlined liked">thumb_up</span></h4>
+                    {% else %}
+                    <h4 class="font"><span style="margin-right: 9px; pointer-events: none; color: rgb(255, 255, 255);" class="material-symbols-outlined">thumb_up</span></h4>
+                    {% endif %}
+                    <a href="{{ url_for('post_page', id=post.id) }}"><h4 class="font" style="cursor: pointer"><span class="material-symbols-outlined">comment</span></h4></a>
                 </div>
             </div>
         <hr style="width: 35%; margin: 20px auto 20px auto; color: rgba(255, 255, 255, 0.3)">

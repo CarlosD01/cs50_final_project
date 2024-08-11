@@ -5,59 +5,62 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container" style="text-align: left; width: 40%; margin-bottom: 7px;">
-        <p style="display: flex; align-items: center; margin-bottom: 7px;">
-            <a href="/" class="back"><span class="material-symbols-outlined">arrow_back</span></a>
-            {% if post.username == current_user.username %}
-                <a href="/dashboard"><img style="width: 40px; margin-right: 7px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture"></a>
+    <div class="container" style="text-align: left; width: 33%; margin-bottom: 7px;">
+        <p style="display: flex; align-items: center;">
+            {% if post.users.profile_pic %}
+            <a href="{{ url_for('view', id=post.users.id) }}"><img style="width: 42px; height: 42px; margin-right: 7px; border-radius: 50%;" src="{{ url_for('static', filename='images/' + post.users.profile_pic) }}" alt="Profile picture"></a>
             {% else %}
-                <img style="width: 40px; margin-right: 7px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
+            <a href="{{ url_for('view', id=post.users.id) }}"><img style="width: 42px; margin-right: 7px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture"></a>
             {% endif %}
-            f/{{ post.community }} • {{ post.date_created }}<br>{{ post.username }}
+            f/{{ post.community }} • {{ post.date_created }}<br>{{ post.users.username }}
         </p>
-        <h4 style="margin-bottom: 12px; pointer-events: none;">{{ post.title }}</h4>
-        <p class="font">{{ post.body }}</p>
+        <h4 style="margin-bottom: 7px; pointer-events: none;">{{ post.title }}</h4>
+        <p class="font">{{ post.body|safe }}</p>
         <div style="display: flex; align-items: center;">
-            <h4 class="font" style="margin-top: 9px; cursor: pointer"><span style="margin-right: 12px;" class="material-symbols-outlined">thumb_up</span></h4>
-            <h4 class="font" style="margin-top: 9px; cursor: pointer"><span style="margin-right: 12px;" class="material-symbols-outlined">thumb_down</span></h4>
-            {% if post.username == current_user.username %}
-                <a href="/post/edit/{{ post.id }}"><h4 class="font" style="margin-top: 9px; cursor: pointer"><span class="material-symbols-outlined">edit</span></h4></a>
+            <p style="margin-right: 7px; margin-top: 1px">{{ post.post_like|length }}</p>
+            {% if current_user.id in post.post_like|map(attribute="user_id")|list %}
+            <h4 class="font" style="cursor: pointer;"><a href="{{ url_for('post_like', id=post.id) }}" class="like_dislike"><span style="margin-right: 9px; color: rgb(0, 149, 235);" class="material-symbols-outlined liked">thumb_up</span></a></h4>
+            {% else %}
+            <h4 class="font" style="cursor: pointer;"><a href="{{ url_for('post_like', id=post.id) }}" class="like_dislike"><span style="margin-right: 9px;" class="material-symbols-outlined">thumb_up</span></a></h4>
+            {% endif %}
+            {% if post.users.username == current_user.username %}
+                <a href="{{ url_for('post_edit', id=post.id)}}"><h4 class="font" style="cursor: pointer"><span class="material-symbols-outlined">edit</span></h4></a>
             {% endif %}
         </div>
     </div>
     <form method="POST">
-        <div class="container" style="text-align: left; width: 40%; border: transparent; margin-bottom: 11px;">
+        <div class="container" style="text-align: left; width: 33%; border: transparent; margin-bottom: 6px;">
             {{ form.hidden_tag() }}
             {{ form.csrf_token }}
-            <h4 style="padding: 0px 11px 11px 0px; pointer-events: none;">Comments</h4>
-            <br>
-            {{ form.comment(placeholder="Add a comment...", style="height: 42px") }}
-            <div style="text-align: right; margin-top: 9px;">
-                {{ form.submit(class="button") }}
-            </div>
+            <h4 style="pointer-events: none;">Comments</h4>
+            {% if current_user.is_authenticated %}
+                {{ form.comment(placeholder="Add a comment...", style="height: 42px") }}
+                <div style="text-align: right; margin-top: 16px;">
+                    {{ form.submit(class="button") }}
+                </div>
+            {% else %}
+                <h6 style="text-align: center;">Sign in to leave a comment.</h6>
+            {% endif %}
         </div>
+        <hr style="width: 33%; margin: 0px auto 20px auto; color: rgba(255, 255, 255, 0.7);">
     </form>
     {% if comments %}
         {% for comment in comments %}
-            <div class="container" style="text-align: left; width: 40%;">
-                {% if comment.username == current_user.username %}
+            <div class="container" style="text-align: left; width: 33%;">
                     <p>
-                        <a href="/dashboard"><img style="width: 25px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture"></a>
-                        {{ comment.username }} • {{ comment.date_created }}
-                    </p>
-                {% else %}
-                    <p>
+                        {% if comment.commenter.profile_pic %}
+                        <img style="width: 25px; height: 25px; border-radius: 50%;" src="{{ url_for('static', filename='images/' + comment.commenter.profile_pic) }}" alt="Profile picture">
+                        {% else %}
                         <img style="width: 25px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
+                        {% endif %}
                         {{ comment.username }} • {{ comment.date_created }}
                     </p>
-                {% endif %}
                 <div style="margin-left: 28px;">
                     <p>{{ comment.body }}</p>
-                    <div style="display: flex; align-items: center;">
+                    <!--<div style="display: flex; align-items: center;">
                         <h4 class="font" style="margin-top: 9px;"><span style="margin-right: 12px; cursor: pointer" class="material-symbols-outlined">thumb_up</span></h4>
-                        <h4 class="font" style="margin-top: 9px;"><span style="margin-right: 12px; cursor: pointer" class="material-symbols-outlined">thumb_down</span></h4>
                         <h4 class="font" style="margin-top: 9px; cursor: pointer"><span class="material-symbols-outlined">Reply</span></h4>
-                    </div>
+                    </div>-->
                 </div>
             </div>
             <br>
