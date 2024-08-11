@@ -4,7 +4,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: rgb(23, 25, 31);
+    background-color: rgb(19, 21, 26);
 }
 
 li, a, button{
@@ -99,7 +99,7 @@ img {
 
 input {
     width: auto;
-    background-color: rgba(65, 71, 88, 0.6);
+    background-color: rgba(65, 71, 88, 0.4);
     border: 2px transparent;
     border-radius: 10px;
     padding: 9px;
@@ -110,7 +110,7 @@ input {
 
 input:hover {
     cursor: pointer;
-    background-color: rgba(65, 71, 88, 1);
+    background-color: rgba(65, 71, 88, 0.6);
 }
 
 p a {
@@ -165,7 +165,7 @@ p a:hover {
 }
 
 .body {
-    background-color: rgba(65, 71, 88, 0.6);
+    background-color: rgba(65, 71, 88, 0.4);
     border: 2px transparent;
     border-radius: 10px;
     padding: 9px 0px 75px 9px;
@@ -176,7 +176,7 @@ p a:hover {
 
 .body:hover {
     cursor: pointer;
-    background-color: rgba(65, 71, 88, 1);
+    background-color: rgba(65, 71, 88, 0.6);
 }
 
 .communities {

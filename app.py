@@ -80,6 +80,7 @@ class Posts(db.Model):
     community = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_like = db.relationship('Like', backref='post_like', lazy=True)
+    post_like = db.relationship('Comments', backref='post_comment', lazy=True)
 
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -119,6 +120,7 @@ class Update(FlaskForm):
     user_bio = TextAreaField()
     delete = delete = SubmitField("Delete")
     save = SubmitField("Save")
+    upload = SubmitField("Upload")
 
 class Post(FlaskForm):
     title = StringField(validators=[DataRequired()])
@@ -188,7 +190,7 @@ def community_add():
         db.session.add(communities_new)
         db.session.commit()
 
-        flash("Community successfully added!")
+        flash("Community successfully added.")
         return redirect("/")
     
     return render_template("community_add.html", admin_user=admin_user, communities=communities, form=form)
@@ -253,7 +255,7 @@ def post():
         form.title.data = ""
         form.body.data = ""
 
-        flash("Post created!")
+        flash("Post created.")
 
     return render_template("post.html", admin_user=admin_user, communities=communities, form=form)
 
@@ -340,7 +342,7 @@ def login():
 
                 login_user(user)
 
-                flash("Login successful!")
+                flash("Login successful.")
             
             else:
                 flash("Incorrect password.")
@@ -372,11 +374,11 @@ def signup():
             form.username.data = ""
             form.password_hash.data = ""
 
-            flash("User added successfully!")
+            flash("User added successfully.")
             return redirect("/login")
         
         else:
-            flash("User already exists!")
+            flash("User already exists.")
             return redirect("/signup")
         
     return render_template("signup.html", communities=communities, form=form)
@@ -395,6 +397,12 @@ def dashboard(id):
 
             user.display_name = request.form["display_name"]
             user.user_bio = request.form["user_bio"]
+            
+            db.session.commit()
+
+            flash("Changes made successfully.")
+
+        elif form.upload.data:
             user.profile_pic = request.files["profile_pic"]
 
 
@@ -414,7 +422,7 @@ def dashboard(id):
             db.session.commit()
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_id))
 
-            flash("Changes made successfully.")
+            flash("Photo upload successful.")
 
         elif form.delete.data:
             
@@ -429,6 +437,7 @@ def dashboard(id):
     
     form.display_name.data = user.display_name
     form.user_bio.data = user.user_bio
+    form.profile_pic.process_data(url_for('static', filename='images/' + user.profile_pic))
     post_history = Posts.query.filter_by(user_id=id).order_by(Posts.date_created.desc())
 
     return render_template("dashboard.html", admin_user=admin_user, communities=communities, post_history=post_history, form=form)
@@ -442,7 +451,9 @@ def view(id):
     
     post_history = Posts.query.filter_by(user_id=user.id).order_by(Posts.date_created.desc())
 
-    return render_template("view.html", admin_user=admin_user, communities=communities, post_history=post_history, user=user)
+    comments = Comments.query.filter_by(user_id=user.id).order_by(Comments.date_created)
+
+    return render_template("view.html", admin_user=admin_user, communities=communities, post_history=post_history, comments=comments, user=user)
 
 @app.route("/logout", methods=["GET", "POST"])
 @login_required

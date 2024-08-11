@@ -20,17 +20,17 @@
         </div>
         <div style="display: flex; flex-direction: column; text-align: left; margin-left: 12px;">
             <h4 style="margin-right: 15px; pointer-events: none;">Overview</h4>
-            <hr style="width: 150px; align-items: left; margin-top: 3px;color: rgba(255, 255, 255, 0.7);">
+            <hr style="width: 150px; align-items: left; margin-top: 0px;color: rgba(255, 255, 255, 0.7);">
             <p style="font-size: 17px;"><span style="font-weight: bold;">Display name: </span>{% if user.display_name %}{{ user.display_name }}{% endif %}</p>
             <p style="font-size: 17px;"><span style="font-weight: bold;">Username: </span>{{ user.username }}</p>
             <p style="font-size: 17px;"><span style="font-weight: bold;">Status: </span>{% if user.id in admin_user %}Administrator{% else %}User{% endif %}</p>
             <p style="font-size: 17px;"><span style="font-weight: bold;">Date Joined: </span>{{ user.date_created }}</p>
             <p style="font-size: 17px;"><span style="font-weight: bold;">Bio: </span>{% if user.user_bio %}{{ user.user_bio }}{% endif %}</p>
         </div>
-        <hr style="margin-top: 3px; color: rgba(255, 255, 255, 0.7);">
+        <hr style="margin-top: 0px; color: rgba(255, 255, 255, 0.7);">
         <div style="display: flex; flex-direction: column; text-align: left;">
             <h4 style="margin-right: 15px; pointer-events: none; margin-left: 12px;">Posts</h4>
-            <hr style="width: 110px; margin-left: 12px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">
+            <hr style="width: 110px; margin-left: 12px; margin-top: 0px; color: rgba(255, 255, 255, 0.7);">
             {% for post in post_history %}
                 <div style="margin-left: 12px;">
                     <p style="display: flex; align-items: center;">
@@ -44,8 +44,28 @@
                     <a href="{{ url_for('post_page', id=post.id)}}"><h4 style="margin-bottom: 7px;">{{ post.title }}</h4></a>
                     <p>{{ post.body|safe }}</p>
                 </div>
-                <hr style="margin-top: 3px; color: rgba(255, 255, 255, 0.7);">
+                <hr style="margin-top: 0px; color: rgba(255, 255, 255, 0.7);">
             {% endfor %}
-        </div>
-    </div>
+            <h4 style="margin-right: 15px; pointer-events: none; margin-left: 12px;">Comments</h4>
+            <hr style="width: 110px; margin-left: 12px; margin-top: 0px; color: rgba(255, 255, 255, 0.7);">
+            {% for comment in comments %}
+            <div style="margin-left: 12px;">
+                <p style="display: flex; align-items: center;">
+                    f/{{ comment.post_comment.community }} •<span style="color: transparent;">_</span><a href="{{ url_for('post_page', id=comment.post_comment.id) }}">{{ comment.post_comment.title }}</a>
+                </p>
+                <div style="text-align: left; border: transparent; padding-top: 0px;">
+                    <p>
+                        {% if comment.commenter.profile_pic %}
+                        <img style="width: 25px; height: 25px; border-radius: 50%;" src="{{ url_for('static', filename='images/' + comment.commenter.profile_pic) }}" alt="Profile picture">
+                        {% else %}
+                        <img style="width: 25px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
+                        {% endif %}
+                        {{ comment.username }} • {{ comment.date_created }}
+                        <br>
+                    </p>
+                    <p style="margin-left: 30px;"">{{ comment.body }}</p>
+                </div>
+            </div>
+            <hr style="margin-top: 0px; color: rgba(255, 255, 255, 0.7);">
+            {% endfor %}
 {% endblock %}
