@@ -49,9 +49,9 @@
             <div class="container" style="text-align: left; width: 33%;">
                     <p>
                         {% if comment.commenter.profile_pic %}
-                        <img style="width: 25px; height: 25px; border-radius: 50%;" src="{{ url_for('static', filename='images/' + comment.commenter.profile_pic) }}" alt="Profile picture">
+                        <a href="{{ url_for('view', id=comment.commenter.id) }}"><img style="width: 25px; height: 25px; border-radius: 50%;" src="{{ url_for('static', filename='images/' + comment.commenter.profile_pic) }}" alt="Profile picture"></a>
                         {% else %}
-                        <img style="width: 25px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture">
+                        <a href="{{ url_for('view', id=comment.commenter.id) }}"><img style="width: 25px;" src="{{ url_for('static', filename='images/default_profile.png') }}" alt="Default profile picture"></a>
                         {% endif %}
                         {{ comment.username }} • {{ comment.date_created }}
                     </p>
