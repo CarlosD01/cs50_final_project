@@ -3,14 +3,13 @@ from flask_wtf import FlaskForm # type: ignore
 from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField, ValidationError, SelectField # type: ignore
 from wtforms.validators import DataRequired, EqualTo, InputRequired # type: ignore
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import delete
 from datetime import datetime
 import jinja2
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_ckeditor import CKEditor, CKEditorField
-from flask_migrate import Migrate
-from flask_wtf.file import FileField
+from flask_ckeditor import CKEditor, CKEditorField # type: ignore
+from flask_migrate import Migrate # type: ignore
+from flask_wtf.file import FileField # type: ignore
 from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
