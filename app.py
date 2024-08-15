@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm # type: ignore
 from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField, ValidationError, SelectField # type: ignore
 from wtforms.validators import DataRequired, EqualTo, InputRequired # type: ignore
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import delete
 from datetime import datetime
 import jinja2
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -55,9 +56,9 @@ class Users(db.Model, UserMixin):
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     profile_pic = db.Column(db.String())
     user_bio = db.Column(db.String(1000))
-    posts = db.relationship('Posts', backref='users', lazy=True)
-    comments = db.relationship('Comments', backref='commenter', lazy=True)
-    user_like = db.relationship('Like', backref='user_like', lazy=True)
+    posts = db.relationship('Posts', backref='users', cascade="all, delete")
+    comments = db.relationship('Comments', backref='commenter', cascade="all, delete")
+    user_like = db.relationship('Like', backref='user_like', cascade="all, delete")
 
     password_hash = db.Column(db.String(50), nullable=False)
 
@@ -79,8 +80,8 @@ class Posts(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     community = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    post_like = db.relationship('Like', backref='post_like', lazy=True)
-    post_like = db.relationship('Comments', backref='post_comment', lazy=True)
+    post_like = db.relationship('Like', backref='post_like', cascade="all, delete")
+    post_comment = db.relationship('Comments', backref='post_comment', cascade="all, delete")
 
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -267,6 +268,8 @@ def post_edit(id):
     post = Posts.query.get_or_404(id)
 
     communities = Communities.query.order_by(Communities.community)
+
+    form.community.choices = [(i.community, i.community) for i in communities]
     
     if form.validate_on_submit():
         if form.post.data:
@@ -391,6 +394,8 @@ def dashboard(id):
     user = Users.query.get_or_404(id)
 
     communities = Communities.query.order_by(Communities.community)
+
+    comments = Comments.query.filter_by(user_id=user.id).order_by(Comments.date_created)
     
     if request.method == "POST":
         if form.save.data:
@@ -437,10 +442,9 @@ def dashboard(id):
     
     form.display_name.data = user.display_name
     form.user_bio.data = user.user_bio
-    form.profile_pic.process_data(url_for('static', filename='images/' + user.profile_pic))
     post_history = Posts.query.filter_by(user_id=id).order_by(Posts.date_created.desc())
 
-    return render_template("dashboard.html", admin_user=admin_user, communities=communities, post_history=post_history, form=form)
+    return render_template("dashboard.html", admin_user=admin_user, communities=communities, post_history=post_history, comments=comments, form=form)
 
 @app.route("/view/<int:id>", methods=["GET"])
 def view(id):
